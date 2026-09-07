@@ -1,11 +1,12 @@
 package dev.jorge.projects.gossipuerj.handler;
 
-import dev.jorge.projects.gossipuerj.dto.response.ExceptionResponse;
-import dev.jorge.projects.gossipuerj.exception.UserAlreadyExistsException;
-import dev.jorge.projects.gossipuerj.exception.UserNotFoundException;
+import dev.jorge.projects.gossipuerj.dto.response.user.ExceptionResponse;
+import dev.jorge.projects.gossipuerj.exception.post.PostNotFoundException;
+import dev.jorge.projects.gossipuerj.exception.user.UserAlreadyExistsException;
+import dev.jorge.projects.gossipuerj.exception.user.UserNotFoundException;
 
-import dev.jorge.projects.gossipuerj.exception.UserNotVerifiedException;
-import dev.jorge.projects.gossipuerj.exception.UserVerificationCodeIsNotValidException;
+import dev.jorge.projects.gossipuerj.exception.user.UserNotVerifiedException;
+import dev.jorge.projects.gossipuerj.exception.user.UserVerificationCodeIsNotValidException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -24,7 +25,7 @@ import java.util.Map;
 @RestController
 public class GlobalExceptionHandler {
 
-    @ExceptionHandler({UserAlreadyExistsException.class})
+    @ExceptionHandler(UserAlreadyExistsException.class)
     public final ResponseEntity<ExceptionResponse> handlerConflictException(UserAlreadyExistsException ex, WebRequest webRequest) {
         ExceptionResponse exceptionResponse = new ExceptionResponse(
                 ex.getMessage(),
@@ -34,7 +35,7 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(exceptionResponse, HttpStatus.CONFLICT);
     }
 
-    @ExceptionHandler({UserNotFoundException.class})
+    @ExceptionHandler({UserNotFoundException.class, PostNotFoundException.class})
     public final ResponseEntity<ExceptionResponse> handlerUserNotFoundException(UserNotFoundException ex, WebRequest webRequest) {
         ExceptionResponse exceptionResponse = new ExceptionResponse(
                 ex.getMessage(),
@@ -44,7 +45,7 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(exceptionResponse, HttpStatus.NOT_FOUND);
     }
 
-    @ExceptionHandler({BadCredentialsException.class})
+    @ExceptionHandler(BadCredentialsException.class)
     public final ResponseEntity<ExceptionResponse> handlerBadCredentialsException(BadCredentialsException ex, WebRequest webRequest) {
         ExceptionResponse exceptionResponse = new ExceptionResponse(
                 ex.getMessage(),
@@ -54,7 +55,7 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(exceptionResponse, HttpStatus.UNAUTHORIZED);
     }
 
-    @ExceptionHandler({UserNotVerifiedException.class})
+    @ExceptionHandler(UserNotVerifiedException.class)
     public final ResponseEntity<ExceptionResponse> handlerUserNotVerifiedException(UserNotVerifiedException ex, WebRequest webRequest) {
         ExceptionResponse exceptionResponse = new ExceptionResponse(
                 ex.getMessage(),
@@ -64,7 +65,7 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(exceptionResponse, HttpStatus.FORBIDDEN);
     }
 
-    @ExceptionHandler({UserVerificationCodeIsNotValidException.class})
+    @ExceptionHandler(UserVerificationCodeIsNotValidException.class)
     public final ResponseEntity<ExceptionResponse> handlerUserVerificationCodeIsNotValidException(UserVerificationCodeIsNotValidException ex, WebRequest webRequest) {
         ExceptionResponse exceptionResponse = new ExceptionResponse(
                 ex.getMessage(),

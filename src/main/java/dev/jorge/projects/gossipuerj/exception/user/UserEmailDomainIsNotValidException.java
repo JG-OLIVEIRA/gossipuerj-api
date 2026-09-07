@@ -1,4 +1,4 @@
-package dev.jorge.projects.gossipuerj.exception;
+package dev.jorge.projects.gossipuerj.exception.user;
 
 import dev.jorge.projects.gossipuerj.exception.enums.ExceptionDetails;
 import org.springframework.http.HttpStatus;

@@ -1,7 +1,7 @@
 package dev.jorge.projects.gossipuerj.config;
 
 import dev.jorge.projects.gossipuerj.Component.SecurityFilter;
-import dev.jorge.projects.gossipuerj.exception.UserNotFoundException;
+import dev.jorge.projects.gossipuerj.exception.user.UserNotFoundException;
 import dev.jorge.projects.gossipuerj.repository.UserRepository;
 import jakarta.servlet.DispatcherType;
 import lombok.RequiredArgsConstructor;
@@ -33,7 +33,7 @@ public class SecurityConfig {
     private final UserRepository userRepository;
 
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http, SecurityFilter securityFilter,  CorsConfigurationSource corsConfigurationSource) throws Exception {
+    public SecurityFilterChain securityFilterChain(HttpSecurity http, SecurityFilter securityFilter, CorsConfigurationSource corsConfigurationSource) throws Exception {
         return http
                 .csrf(AbstractHttpConfigurer::disable)
                 .cors(cors -> cors.configurationSource(corsConfigurationSource))
@@ -41,20 +41,25 @@ public class SecurityConfig {
                 .authorizeHttpRequests(authorize -> authorize
                         .dispatcherTypeMatchers(DispatcherType.ERROR).permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/v1/auth/**").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/swagger-ui.html").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/api-docs").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/v1/posts").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/v1/posts/{postId}").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/v1/posts/{postId}/likes").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/v1/posts/{postId}/comments").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/v1/posts/{postId}/comments/{commentId}").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/v1/posts/{postId}/comments/{commentId}/replies").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/v1/posts/{postId}/comments/{commentId}/likes").permitAll()
                         .anyRequest().authenticated())
                 .addFilterBefore(securityFilter, UsernamePasswordAuthenticationFilter.class)
                 .build();
-
     }
 
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(List.of("https://gossipuerj.vercel.app", "http://localhost:8080", "http://localhost:3000"));
-        configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE"));
-        configuration.setAllowedHeaders(List.of("Authorization", "Content-Type"));
+        configuration.setAllowedOriginPatterns(List.of("https://*.vercel.app", "https://gossipuerj.vercel.app", "http://localhost:8080", "http://localhost:3000"));
+        configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
+        configuration.setAllowedHeaders(List.of("Authorization", "Content-Type", "Accept"));
+        configuration.setAllowCredentials(true);
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);

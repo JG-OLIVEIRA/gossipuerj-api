@@ -1,12 +1,11 @@
 package dev.jorge.projects.gossipuerj.model;
 
 import com.github.f4b6a3.uuid.UuidCreator;
-import dev.jorge.projects.gossipuerj.enums.Gender;
-import dev.jorge.projects.gossipuerj.enums.Orientation;
-import dev.jorge.projects.gossipuerj.enums.Role;
+import dev.jorge.projects.gossipuerj.enums.user.Gender;
+import dev.jorge.projects.gossipuerj.enums.user.Orientation;
+import dev.jorge.projects.gossipuerj.enums.user.Role;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Size;
 import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -34,14 +33,12 @@ public class User implements UserDetails, Serializable {
     @Id
     private String id;
 
-    @Column(nullable = false, unique = true, length = 50)
-    @Size(max = 50)
+    @Column(nullable = false, unique = true)
     @NotBlank
     private String username;
 
     @Column(nullable = false, unique = true)
     @NotBlank
-    @Size(max = 255)
     private String email;
 
     @Column(nullable = false)
@@ -49,13 +46,11 @@ public class User implements UserDetails, Serializable {
     @EqualsAndHashCode.Exclude
     private String password;
 
-    @Column(length = 6)
     private String verificationCode;
 
     @Column(nullable = false)
     private LocalDateTime verificationCodeExpiresAt;
 
-    @Column()
     private boolean enabled;
 
     @ElementCollection(fetch = FetchType.EAGER)

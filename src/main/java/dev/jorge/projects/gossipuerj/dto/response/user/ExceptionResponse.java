@@ -1,4 +1,4 @@
-package dev.jorge.projects.gossipuerj.dto.response;
+package dev.jorge.projects.gossipuerj.dto.response.user;
 
 import java.util.Date;
 

@@ -30,7 +30,7 @@ public class SecurityFilter extends OncePerRequestFilter {
 
     private final Map<String, RequestInfo> requestCounts = new ConcurrentHashMap<>();
 
-    private static final int MAX_REQUESTS = 5;
+    private static final int MAX_REQUESTS = 200;
     private static final long TIME_WINDOW = 60 * 1000;
 
     private static class RequestInfo {
@@ -45,7 +45,13 @@ public class SecurityFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(@NonNull HttpServletRequest request, @NonNull HttpServletResponse response, @NonNull FilterChain filterChain) throws ServletException, IOException {
-        String clientIp = request.getRemoteAddr();
+        String clientIp = request.getHeader("X-Forwarded-For");
+        if (clientIp == null || clientIp.isBlank()) {
+            clientIp = request.getRemoteAddr();
+        } else {
+            clientIp = clientIp.split(",")[0].trim();
+        }
+
         long currentTime = System.currentTimeMillis();
 
         requestCounts.putIfAbsent(clientIp, new RequestInfo(0, currentTime));

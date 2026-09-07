@@ -1,4 +1,4 @@
-package dev.jorge.projects.gossipuerj.dto.request;
+package dev.jorge.projects.gossipuerj.dto.request.user;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;

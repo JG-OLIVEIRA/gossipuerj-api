@@ -6,14 +6,12 @@ import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.auth0.jwt.interfaces.DecodedJWT;
 
 import dev.jorge.projects.gossipuerj.config.JWTUserData;
-import dev.jorge.projects.gossipuerj.dto.request.LoginRequest;
-import dev.jorge.projects.gossipuerj.dto.request.RegisterUserRequest;
-import dev.jorge.projects.gossipuerj.dto.request.VerifyUserRequest;
-import dev.jorge.projects.gossipuerj.enums.Gender;
-import dev.jorge.projects.gossipuerj.enums.Orientation;
-import dev.jorge.projects.gossipuerj.exception.*;
+import dev.jorge.projects.gossipuerj.dto.request.user.LoginRequest;
+import dev.jorge.projects.gossipuerj.dto.request.user.RegisterUserRequest;
+import dev.jorge.projects.gossipuerj.dto.request.user.VerifyUserRequest;
+import dev.jorge.projects.gossipuerj.exception.user.*;
 import dev.jorge.projects.gossipuerj.model.User;
-import dev.jorge.projects.gossipuerj.enums.Role;
+import dev.jorge.projects.gossipuerj.enums.user.Role;
 import dev.jorge.projects.gossipuerj.repository.UserRepository;
 
 import lombok.RequiredArgsConstructor;
@@ -69,13 +67,13 @@ public class AuthService {
         newUser.setEmail(email);
         newUser.setPassword(hashPassword(request.password()));
         newUser.setRoles(Set.of(Role.ROLE_USER));
-        newUser.setGender(Gender.valueOf(request.gender()));
-        newUser.setOrientation(Orientation.valueOf(request.orientation()));
+        newUser.setGender(request.gender());
+        newUser.setOrientation(request.orientation());
         newUser.setVerificationCode(generateVerificationCode());
         newUser.setVerificationCodeExpiresAt(LocalDateTime.now().plusMinutes(15));
 
         User savedUser = userRepository.save(newUser);
-        sendVerificationEmail(savedUser);
+        sendVerificationEmail(newUser);
         return savedUser;
     }
 
@@ -116,6 +114,10 @@ public class AuthService {
     private User findByEmail(String email){
         return userRepository.findByEmail(email)
                 .orElseThrow(() -> new UserNotFoundException(email));
+    }
+
+    public List<User> findByUsernameIn(Set<String> usernames) {
+        return userRepository.findByUsernameIn(usernames);
     }
 
     private String generateVerificationCode() {
