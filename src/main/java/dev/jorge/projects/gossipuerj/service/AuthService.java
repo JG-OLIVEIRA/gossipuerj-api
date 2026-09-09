@@ -46,7 +46,7 @@ public class AuthService {
     private final AuthenticationManager authenticationManager;
 
     @Transactional
-    public User signUp(RegisterUserRequest request) {
+    public void signUp(RegisterUserRequest request) {
         User newUser = new User();
 
         String email = request.email();
@@ -72,9 +72,8 @@ public class AuthService {
         newUser.setVerificationCode(generateVerificationCode());
         newUser.setVerificationCodeExpiresAt(LocalDateTime.now().plusMinutes(15));
 
-        User savedUser = userRepository.save(newUser);
+        userRepository.save(newUser);
         sendVerificationEmail(newUser);
-        return savedUser;
     }
 
     public User signIn(LoginRequest request) {
@@ -114,10 +113,6 @@ public class AuthService {
     private User findByEmail(String email){
         return userRepository.findByEmail(email)
                 .orElseThrow(() -> new UserNotFoundException(email));
-    }
-
-    public List<User> findByUsernameIn(Set<String> usernames) {
-        return userRepository.findByUsernameIn(usernames);
     }
 
     private String generateVerificationCode() {

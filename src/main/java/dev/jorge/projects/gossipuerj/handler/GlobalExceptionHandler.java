@@ -2,11 +2,8 @@ package dev.jorge.projects.gossipuerj.handler;
 
 import dev.jorge.projects.gossipuerj.dto.response.user.ExceptionResponse;
 import dev.jorge.projects.gossipuerj.exception.post.PostNotFoundException;
-import dev.jorge.projects.gossipuerj.exception.user.UserAlreadyExistsException;
-import dev.jorge.projects.gossipuerj.exception.user.UserNotFoundException;
+import dev.jorge.projects.gossipuerj.exception.user.*;
 
-import dev.jorge.projects.gossipuerj.exception.user.UserNotVerifiedException;
-import dev.jorge.projects.gossipuerj.exception.user.UserVerificationCodeIsNotValidException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -73,6 +70,16 @@ public class GlobalExceptionHandler {
                 new Date()
         );
         return new ResponseEntity<>(exceptionResponse, HttpStatus.FORBIDDEN);
+    }
+
+    @ExceptionHandler(UserEmailDomainIsNotValidException.class)
+    public final ResponseEntity<ExceptionResponse> handlerUserEmailDomainIsNotValidException(UserEmailDomainIsNotValidException ex, WebRequest webRequest) {
+        ExceptionResponse exceptionResponse = new ExceptionResponse(
+                ex.getMessage(),
+                webRequest.getDescription(false),
+                new Date()
+        );
+        return new ResponseEntity<>(exceptionResponse, HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)

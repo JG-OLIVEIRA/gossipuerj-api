@@ -7,7 +7,7 @@ public enum ExceptionDetails {
 
     COMMENT_NOT_FOUND_EXCEPTION_MESSAGE("O comentário '%s' não foi encontrado", HttpStatus.NOT_FOUND),
     POST_NOT_FOUND_EXCEPTION_MESSAGE("O post '%s' não foi encontrado", HttpStatus.NOT_FOUND),
-    USER_EMAIL_DOMAIN_NOT_ALLOWED_MESSAGE("O domínio do e-mail '%s' não é permitido", HttpStatus.BAD_REQUEST),
+    USER_EMAIL_DOMAIN_NOT_ALLOWED_MESSAGE("Só é permitido email institucional @graduacao.uerj.br", HttpStatus.BAD_REQUEST),
     USER_VERIFICATION_CODE_IS_NOT_VALID_MESSAGE("O código de verificação '%s' é inválido", HttpStatus.BAD_REQUEST),
     USER_VERIFICATION_CODE_EXPIRED_MESSAGE("O código de verificação '%s' expirou", HttpStatus.BAD_REQUEST),
     USER_NOT_VERIFIED_MESSAGE("O usuário '%s' não está verificado", HttpStatus.FORBIDDEN),
