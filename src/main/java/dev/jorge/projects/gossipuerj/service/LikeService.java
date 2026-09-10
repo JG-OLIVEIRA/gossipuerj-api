@@ -49,18 +49,11 @@ public class LikeService {
     }
 
     public int getTotalPostLikes(String postId) {
-        return likeRepository.countLikesByPostId(postId);
+        return likeRepository.countByPostId(postId);
     }
 
     public int getTotalCommentLikes(String postId, String commentId) {
-        return likeRepository.countLikesByPostIdAndCommentId(postId, commentId);
+        return likeRepository.countByPostIdAndCommentId(postId, commentId);
     }
 
-    public boolean hasUserLikedPost(String postId, String userId) {
-        return likeRepository.existsByAuthorIdAndPostIdAndCommentIdIsNull(userId, postId);
-    }
-
-    public boolean hasUserLikedComment(String postId, String commentId, String userId) {
-        return likeRepository.existsByAuthorIdAndPostIdAndCommentId(userId, postId, commentId);
-    }
 }

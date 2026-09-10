@@ -7,9 +7,9 @@ import dev.jorge.projects.gossipuerj.repository.PostRepository;
 
 import lombok.RequiredArgsConstructor;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -31,12 +31,12 @@ public class PostService {
         return postRepository.findById(postId).orElseThrow(() -> new PostNotFoundException(postId));
     }
 
-    public List<Post> findByAuthorId(String authorId) {
-        return postRepository.findByAuthorId(authorId);
+    public Page<Post> findByAuthorId(String authorId, Pageable pageable) {
+        return postRepository.findByAuthorId(authorId, pageable);
     }
 
-    public List<Post> findAll(){
-        return postRepository.findAll();
+    public Page<Post> findAll(Pageable pageable){
+        return postRepository.findAll(pageable);
     }
 
     public void delete(String postId, String userId) {

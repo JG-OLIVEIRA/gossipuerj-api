@@ -48,6 +48,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET, "/api/v1/posts/{postId}/comments/{commentId}").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/v1/posts/{postId}/comments/{commentId}/replies").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/v1/posts/{postId}/comments/{commentId}/likes").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api-docs", "/swagger-ui/**", "/swagger-ui.html").hasRole("ADMIN")
                         .anyRequest().authenticated())
                 .addFilterBefore(securityFilter, UsernamePasswordAuthenticationFilter.class)
                 .build();
