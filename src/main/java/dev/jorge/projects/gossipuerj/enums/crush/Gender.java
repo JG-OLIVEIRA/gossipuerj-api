@@ -1,4 +1,4 @@
-package dev.jorge.projects.gossipuerj.enums.user;
+package dev.jorge.projects.gossipuerj.enums.crush;
 
 public enum Gender {
     MALE,

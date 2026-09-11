@@ -1,42 +1,47 @@
 package dev.jorge.projects.gossipuerj.model;
 
 import com.github.f4b6a3.uuid.UuidCreator;
-import dev.jorge.projects.gossipuerj.enums.post.Category;
+import dev.jorge.projects.gossipuerj.enums.crush.Gender;
+import dev.jorge.projects.gossipuerj.enums.crush.Orientation;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "tb_posts")
+@Table(name = "tb_crushes")
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class Post implements Serializable {
+public class Crush implements Serializable {
+
+    @Serial
+    private static final long serialVersionUID = 1L;
 
     @Id
     private String id;
 
-    @Column(nullable = false)
-    private String title;
-
-    @Column(nullable = false)
-    private String content;
-
     @OneToOne
-    @JoinColumn(name = "course_id", nullable = false)
-    private Course course;
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
+
+    @Column(nullable = false)
+    private String photoUrl;
+
+    @Column
+    private String description;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private Category category;
+    private Gender gender;
 
-    @ManyToOne
-    @JoinColumn(name = "author_id", nullable = false)
-    private User author;
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private Orientation orientation;
 
     @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt;

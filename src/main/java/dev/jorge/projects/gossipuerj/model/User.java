@@ -1,8 +1,6 @@
 package dev.jorge.projects.gossipuerj.model;
 
 import com.github.f4b6a3.uuid.UuidCreator;
-import dev.jorge.projects.gossipuerj.enums.user.Gender;
-import dev.jorge.projects.gossipuerj.enums.user.Orientation;
 import dev.jorge.projects.gossipuerj.enums.user.Role;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
@@ -37,6 +35,10 @@ public class User implements UserDetails, Serializable {
     @NotBlank
     private String username;
 
+    @OneToOne
+    @JoinColumn(name = "course_id", nullable = false)
+    private Course course;
+
     @Column(nullable = false, unique = true)
     @NotBlank
     private String email;
@@ -59,14 +61,6 @@ public class User implements UserDetails, Serializable {
     @Enumerated(EnumType.STRING)
     @Builder.Default
     private Set<Role> roles = new HashSet<>(Set.of(Role.ROLE_USER));
-
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
-    private Gender gender;
-
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
-    private Orientation orientation;
 
     @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt;

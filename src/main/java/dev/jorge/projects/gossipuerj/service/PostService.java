@@ -3,6 +3,7 @@ package dev.jorge.projects.gossipuerj.service;
 import dev.jorge.projects.gossipuerj.dto.request.post.PostRequest;
 import dev.jorge.projects.gossipuerj.exception.post.PostNotFoundException;
 import dev.jorge.projects.gossipuerj.model.Post;
+import dev.jorge.projects.gossipuerj.model.User;
 import dev.jorge.projects.gossipuerj.repository.PostRepository;
 
 import lombok.RequiredArgsConstructor;
@@ -16,14 +17,17 @@ import org.springframework.stereotype.Service;
 public class PostService {
 
     private final PostRepository postRepository;
+
     private final AuthService authService;
 
-    public Post createPost(PostRequest request, String userId) {
+    public Post create(PostRequest request, String userId) {
         Post newPost = new Post();
+        User user = authService.findById(userId);
         newPost.setTitle(request.title());
+        newPost.setCourse(user.getCourse());
         newPost.setContent(request.content());
         newPost.setCategory(request.category());
-        newPost.setAuthor(authService.findById(userId));
+        newPost.setAuthor(user);
         return postRepository.save(newPost);
     }
 

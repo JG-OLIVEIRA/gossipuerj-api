@@ -1,4 +1,4 @@
-package dev.jorge.projects.gossipuerj.Component;
+package dev.jorge.projects.gossipuerj.component;
 
 import dev.jorge.projects.gossipuerj.config.JWTUserData;
 import dev.jorge.projects.gossipuerj.service.AuthService;

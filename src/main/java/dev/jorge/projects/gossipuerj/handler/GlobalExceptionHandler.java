@@ -1,6 +1,11 @@
 package dev.jorge.projects.gossipuerj.handler;
 
 import dev.jorge.projects.gossipuerj.dto.response.user.ExceptionResponse;
+import dev.jorge.projects.gossipuerj.exception.comment.CommentNotFoundException;
+import dev.jorge.projects.gossipuerj.exception.course.CourseNotFoundException;
+import dev.jorge.projects.gossipuerj.exception.crush.CrushNotFoundException;
+import dev.jorge.projects.gossipuerj.exception.match.MatchAlreadyRespondedException;
+import dev.jorge.projects.gossipuerj.exception.match.MatchNotAllowedException;
 import dev.jorge.projects.gossipuerj.exception.post.PostNotFoundException;
 import dev.jorge.projects.gossipuerj.exception.user.*;
 
@@ -22,7 +27,10 @@ import java.util.Map;
 @RestController
 public class GlobalExceptionHandler {
 
-    @ExceptionHandler(UserAlreadyExistsException.class)
+    @ExceptionHandler({
+            UserAlreadyExistsException.class,
+            MatchAlreadyRespondedException.class
+    })
     public final ResponseEntity<ExceptionResponse> handlerConflictException(UserAlreadyExistsException ex, WebRequest webRequest) {
         ExceptionResponse exceptionResponse = new ExceptionResponse(
                 ex.getMessage(),
@@ -32,7 +40,13 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(exceptionResponse, HttpStatus.CONFLICT);
     }
 
-    @ExceptionHandler({UserNotFoundException.class, PostNotFoundException.class})
+    @ExceptionHandler({
+            UserNotFoundException.class,
+            PostNotFoundException.class,
+            CourseNotFoundException.class,
+            CommentNotFoundException.class,
+            CrushNotFoundException.class
+    })
     public final ResponseEntity<ExceptionResponse> handlerUserNotFoundException(UserNotFoundException ex, WebRequest webRequest) {
         ExceptionResponse exceptionResponse = new ExceptionResponse(
                 ex.getMessage(),
@@ -52,7 +66,10 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(exceptionResponse, HttpStatus.UNAUTHORIZED);
     }
 
-    @ExceptionHandler(UserNotVerifiedException.class)
+    @ExceptionHandler({
+            UserNotVerifiedException.class,
+            MatchNotAllowedException.class
+    })
     public final ResponseEntity<ExceptionResponse> handlerUserNotVerifiedException(UserNotVerifiedException ex, WebRequest webRequest) {
         ExceptionResponse exceptionResponse = new ExceptionResponse(
                 ex.getMessage(),
@@ -62,14 +79,17 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(exceptionResponse, HttpStatus.FORBIDDEN);
     }
 
-    @ExceptionHandler(UserVerificationCodeIsNotValidException.class)
+    @ExceptionHandler({
+            UserVerificationCodeIsNotValidException.class,
+            UserVerificationCodeExpiredException.class
+    })
     public final ResponseEntity<ExceptionResponse> handlerUserVerificationCodeIsNotValidException(UserVerificationCodeIsNotValidException ex, WebRequest webRequest) {
         ExceptionResponse exceptionResponse = new ExceptionResponse(
                 ex.getMessage(),
                 webRequest.getDescription(false),
                 new Date()
         );
-        return new ResponseEntity<>(exceptionResponse, HttpStatus.FORBIDDEN);
+        return new ResponseEntity<>(exceptionResponse, HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(UserEmailDomainIsNotValidException.class)

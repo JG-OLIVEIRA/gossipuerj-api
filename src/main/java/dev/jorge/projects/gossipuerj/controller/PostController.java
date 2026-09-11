@@ -18,52 +18,50 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
-import java.util.List;
 
 @RestController
-@RequestMapping("/api/v1/posts")
 @RequiredArgsConstructor
 public class PostController {
 
     private final PostService postService;
 
-    @PostMapping
+    @PostMapping("/api/v1/posts")
     @ResponseStatus(HttpStatus.CREATED)
     public ResponseEntity<PostResponse> create(
             @AuthenticationPrincipal JWTUserData userData,
             @RequestBody @Valid PostRequest request
     ){
-        Post created = postService.createPost(request, userData.userId());
+        Post created = postService.create(request, userData.userId());
         return ResponseEntity
                 .created(URI.create("/api/v1/posts/%s".formatted(created.getId())))
-                .body(PostResponse.fromPost(created));
+                .body(PostResponse.from(created));
     }
 
-    @GetMapping("{postId}")
+    @GetMapping("/api/v1/posts/{postId}")
     @ResponseStatus(HttpStatus.OK)
     public PostResponse getOne(@PathVariable String postId){
         Post post = postService.findById(postId);
-        return PostResponse.fromPost(post);
+        return PostResponse.from(post);
     }
 
-    @GetMapping
+    @GetMapping("/api/v1/posts")
     @ResponseStatus(HttpStatus.OK)
     public PageResponse<PostResponse> getAll(@PageableDefault(sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable){
         Page<Post> posts = postService.findAll(pageable);
-        return PageResponse.from(posts.map(PostResponse::fromPost));
+        return PageResponse.from(posts.map(PostResponse::from));
     }
 
-    @GetMapping("me")
+    @GetMapping("/api/v1/posts/me")
     @ResponseStatus(HttpStatus.OK)
     public PageResponse<PostResponse> getAllByUserId(
             @PageableDefault(sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable,
             @AuthenticationPrincipal JWTUserData userData
     ){
         Page<Post> posts = postService.findByAuthorId(userData.userId(), pageable);
-        return PageResponse.from(posts.map(PostResponse::fromPost));
+        return PageResponse.from(posts.map(PostResponse::from));
     }
 
-    @DeleteMapping("{postId}")
+    @DeleteMapping("/api/v1/posts/{postId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void delete(
             @PathVariable String postId,

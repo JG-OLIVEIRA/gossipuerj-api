@@ -5,6 +5,11 @@ import org.springframework.http.HttpStatus;
 
 public enum ExceptionDetails {
 
+    MATCH_ALREADY_RESPONDED_EXCEPTION_MESSAGE("Match não está pendente", HttpStatus.CONFLICT),
+    MATCH_NOT_ALLOWED_EXCEPTION_MESSAGE("Apenas quem recebeu o like pode aceitar o match", HttpStatus.FORBIDDEN),
+    MATCH_NOT_FOUND_EXCEPTION_MESSAGE("O match '%s' não foi encontrado", HttpStatus.NOT_FOUND),
+    CRUSH_NOT_FOUND_EXCEPTION_MESSAGE("O crush '%s' não foi encontrado", HttpStatus.NOT_FOUND),
+    COURSE_NOT_FOUND_EXCEPTION_MESSAGE("O curso '%s' não foi encontrado", HttpStatus.NOT_FOUND),
     COMMENT_NOT_FOUND_EXCEPTION_MESSAGE("O comentário '%s' não foi encontrado", HttpStatus.NOT_FOUND),
     POST_NOT_FOUND_EXCEPTION_MESSAGE("O post '%s' não foi encontrado", HttpStatus.NOT_FOUND),
     USER_EMAIL_DOMAIN_NOT_ALLOWED_MESSAGE("Só é permitido email institucional @graduacao.uerj.br", HttpStatus.BAD_REQUEST),

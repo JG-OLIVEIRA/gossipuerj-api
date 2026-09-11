@@ -1,6 +1,6 @@
 package dev.jorge.projects.gossipuerj.config;
 
-import dev.jorge.projects.gossipuerj.Component.SecurityFilter;
+import dev.jorge.projects.gossipuerj.component.SecurityFilter;
 import dev.jorge.projects.gossipuerj.exception.user.UserNotFoundException;
 import dev.jorge.projects.gossipuerj.repository.UserRepository;
 import jakarta.servlet.DispatcherType;
@@ -41,13 +41,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(authorize -> authorize
                         .dispatcherTypeMatchers(DispatcherType.ERROR).permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/v1/auth/**").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/api/v1/posts").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/api/v1/posts/{postId}").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/api/v1/posts/{postId}/likes").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/api/v1/posts/{postId}/comments").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/api/v1/posts/{postId}/comments/{commentId}").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/api/v1/posts/{postId}/comments/{commentId}/replies").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/api/v1/posts/{postId}/comments/{commentId}/likes").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/actuator/health").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api-docs", "/swagger-ui/**", "/swagger-ui.html").hasRole("ADMIN")
                         .anyRequest().authenticated())
                 .addFilterBefore(securityFilter, UsernamePasswordAuthenticationFilter.class)

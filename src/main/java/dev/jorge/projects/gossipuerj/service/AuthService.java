@@ -6,9 +6,7 @@ import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.auth0.jwt.interfaces.DecodedJWT;
 
 import dev.jorge.projects.gossipuerj.config.JWTUserData;
-import dev.jorge.projects.gossipuerj.dto.request.user.LoginRequest;
-import dev.jorge.projects.gossipuerj.dto.request.user.RegisterUserRequest;
-import dev.jorge.projects.gossipuerj.dto.request.user.VerifyUserRequest;
+import dev.jorge.projects.gossipuerj.dto.request.user.*;
 import dev.jorge.projects.gossipuerj.exception.user.*;
 import dev.jorge.projects.gossipuerj.model.User;
 import dev.jorge.projects.gossipuerj.enums.user.Role;
@@ -41,7 +39,10 @@ public class AuthService {
     private long tokenExpirationTime;
 
     private final UserRepository userRepository;
+
+    private final CourseService courseService;
     private final EmailService emailService;
+
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationManager authenticationManager;
 
@@ -64,16 +65,27 @@ public class AuthService {
         }
 
         newUser.setUsername(username);
+        newUser.setCourse(courseService.create(request.courseName()));
         newUser.setEmail(email);
         newUser.setPassword(hashPassword(request.password()));
         newUser.setRoles(Set.of(Role.ROLE_USER));
-        newUser.setGender(request.gender());
-        newUser.setOrientation(request.orientation());
         newUser.setVerificationCode(generateVerificationCode());
         newUser.setVerificationCodeExpiresAt(LocalDateTime.now().plusMinutes(15));
 
         userRepository.save(newUser);
         sendVerificationEmail(newUser);
+    }
+
+    @Transactional
+    public void update(UpdateUserRequest request, String userId) {
+        User user = findById(userId);
+        if (!user.isEnabled()) {
+            throw new UserNotVerifiedException(request.email());
+        }
+        user.setUsername(request.username());
+        user.setCourse(courseService.create(request.courseName()));
+        user.setEmail(request.email());
+        userRepository.save(user);
     }
 
     public User signIn(LoginRequest request) {
@@ -88,20 +100,52 @@ public class AuthService {
         return user;
     }
 
+    public void delete(String userId) {
+        User user = findById(userId);
+        userRepository.delete(user);
+    }
+
+    public void forgetPassword(String email) {
+        User user = findByEmail(email);
+
+        user.setVerificationCode(generateVerificationCode());
+        user.setVerificationCodeExpiresAt(LocalDateTime.now().plusMinutes(15));
+
+        userRepository.save(user);
+        sendVerificationEmail(user);
+    }
+
+    public void resetPassword(ResetPasswordUserRequest request) {
+        User user = findByEmail(request.email());
+
+        verifyUserVerificationCode(request.email(), request.verificationCode());
+
+        user.setPassword(hashPassword(request.password()));
+        user.setVerificationCode(null);
+        user.setVerificationCodeExpiresAt(null);
+        userRepository.save(user);
+    }
+
     public void verifyUser(VerifyUserRequest request) {
         User user = findByEmail(request.email());
 
+        verifyUserVerificationCode(request.email(), request.verificationCode());
+
+        user.setEnabled(true);
+        user.setVerificationCode(null);
+        user.setVerificationCodeExpiresAt(null);
+        userRepository.save(user);
+    }
+
+    public void verifyUserVerificationCode(String email, String verificationCode) {
+        User user = findByEmail(email);
+
         if (user.getVerificationCodeExpiresAt().isBefore(LocalDateTime.now())) {
-            throw new UserVerificationCodeExpiredException(request.verificationCode());
+            throw new UserVerificationCodeExpiredException(verificationCode);
         }
 
-        if (user.getVerificationCode().equals(request.verificationCode())) {
-            user.setEnabled(true);
-            user.setVerificationCode(null);
-            user.setVerificationCodeExpiresAt(null);
-            userRepository.save(user);
-        } else {
-            throw new UserVerificationCodeIsNotValidException(request.verificationCode());
+        if (!user.getVerificationCode().equals(verificationCode)) {
+            throw new UserVerificationCodeIsNotValidException(verificationCode);
         }
     }
 
@@ -127,7 +171,7 @@ public class AuthService {
 
     public void resendVerificationCode(String email) {
         User user = findByEmail(email);
-        if (user.isEnabled()) {
+        if (!user.isEnabled()) {
             throw new UserNotVerifiedException(email);
         }
         user.setVerificationCode(generateVerificationCode());

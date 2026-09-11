@@ -17,7 +17,7 @@ public class LikeController {
     private final LikeService likeService;
 
     @PostMapping("/api/v1/posts/{postId}/likes")
-    @ResponseStatus(HttpStatus.OK)
+    @ResponseStatus(HttpStatus.CREATED)
     public ResponseEntity<Map<String, Object>> togglePostLike(@PathVariable String postId, @AuthenticationPrincipal JWTUserData userData) {
         boolean liked = likeService.togglePostLike(postId, userData.userId());
         int totalLikes = likeService.getTotalPostLikes(postId);
@@ -25,7 +25,7 @@ public class LikeController {
     }
 
     @PostMapping("/api/v1/posts/{postId}/comments/{commentId}/likes")
-    @ResponseStatus(HttpStatus.OK)
+    @ResponseStatus(HttpStatus.CREATED)
     public ResponseEntity<Map<String, Object>> toggleCommentLike(@PathVariable String postId, @PathVariable String commentId, @AuthenticationPrincipal JWTUserData userData) {
         boolean liked = likeService.toggleCommentLike(postId, commentId, userData.userId());
         int totalLikes = likeService.getTotalCommentLikes(postId, commentId);
