@@ -12,6 +12,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
+
 @Service
 @RequiredArgsConstructor
 public class MatchService {
@@ -21,14 +23,20 @@ public class MatchService {
     private final CrushService crushService;
 
     public Match create(String crushId, String userId){
-        Match match = new Match();
+        Crush liker = findCrushByUserId(userId);
+        String likerId = liker.getId();
 
-        Crush liker = crushService.findByUserId(userId);
+        Optional<Match> existingMatch = matchRepository.findMatchBetweenCrushes(crushId, likerId);
 
-        if(crushId.equals(liker.getId())){
+        if(existingMatch.isPresent()){
+            return accept(crushId, userId, existingMatch.get().getId());
+        }
+
+        if(crushId.equals(likerId)){
             throw new MatchNotAllowedException("");
         }
 
+        Match match = new Match();
         match.setLiker(liker);
         match.setLiked(crushService.findById(crushId));
         match.setStatus(Status.PENDING);
@@ -48,22 +56,24 @@ public class MatchService {
     }
 
     public Page<Match> findAllCreatedByUserId(String userId, Pageable pageable) {
-        Crush crush = crushService.findByUserId(userId);
+        Crush crush = findCrushByUserId(userId);
         return matchRepository.findAllByLikerId(crush.getId(), pageable);
     }
 
     public Page<Match> findAllReceivedByUserId(String userId, Pageable pageable){
-        Crush crush = crushService.findByUserId(userId);
+        Crush crush = findCrushByUserId(userId);
         return matchRepository.findAllByLikedId(crush.getId(), pageable);
     }
 
     private Match findAndValidateMatch(String crushId, String userId, String matchId){
-        Crush liked = crushService.findByUserId(userId);
+        Crush liked = findCrushByUserId(userId);
+        String likedId = liked.getId();
+
         Match match = matchRepository
-                .findByLikerIdAndLikedIdAndId(crushId, liked.getId(), matchId)
+                .findByLikerIdAndLikedIdAndId(crushId, likedId, matchId)
                 .orElseThrow(() -> new MatchNotFoundException(matchId));
 
-        if (!match.getLiked().getId().equals(liked.getId())) {
+        if (!match.getLiked().getId().equals(likedId)) {
             throw new MatchNotAllowedException("");
         }
 
@@ -74,5 +84,8 @@ public class MatchService {
         return match;
     }
 
+    private Crush findCrushByUserId(String userId) {
+        return crushService.findByUserId(userId);
+    }
 
 }
