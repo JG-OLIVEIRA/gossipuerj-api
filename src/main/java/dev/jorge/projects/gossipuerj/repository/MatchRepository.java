@@ -21,7 +21,19 @@ public interface MatchRepository extends JpaRepository<Match, String> {
             @Param("likedId") String likedId,
             @Param("status") Status status
     );
+
     Optional<Match> findByLikerIdAndLikedIdAndId(String likerId, String likedId, String id);
     Page<Match> findAllByLikerId(String likerId, Pageable pageable);
     Page<Match> findAllByLikedId(String likedId, Pageable pageable);
+
+    @Query("""
+        SELECT m
+        FROM Match m
+        WHERE (m.status = :status) AND (m.liker.id = :crushId) OR (m.liked.id = :crushId)
+    """)
+    Page<Match> findAllByCrushId(
+            @Param("crushId") String crushId,
+            @Param("status") Status status
+    , Pageable pageable
+    );
 }

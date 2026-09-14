@@ -68,6 +68,11 @@ public class MatchService {
         return matchRepository.findAllByLikedId(crush.getId(), pageable);
     }
 
+    public Page<Match> findAllRejectedByUserId(String userId, Pageable pageable){
+        Crush crush = findCrushByUserId(userId);
+        return matchRepository.findAllByCrushId(crush.getId(), Status.REJECTED, pageable);
+    }
+
     private Match findAndValidateMatch(String crushId, String userId, String matchId){
         Crush liked = findCrushByUserId(userId);
         String likedId = liked.getId();

@@ -3,10 +3,8 @@ package dev.jorge.projects.gossipuerj.controller;
 import dev.jorge.projects.gossipuerj.config.JWTUserData;
 import dev.jorge.projects.gossipuerj.dto.request.match.MatchRequest;
 import dev.jorge.projects.gossipuerj.dto.response.common.PageResponse;
-import dev.jorge.projects.gossipuerj.dto.response.crush.CrushResponse;
 import dev.jorge.projects.gossipuerj.dto.response.match.MatchResponse;
 import dev.jorge.projects.gossipuerj.enums.match.Status;
-import dev.jorge.projects.gossipuerj.model.Crush;
 import dev.jorge.projects.gossipuerj.model.Match;
 import dev.jorge.projects.gossipuerj.service.MatchService;
 import jakarta.validation.Valid;
@@ -45,6 +43,16 @@ public class MatchController {
             @AuthenticationPrincipal JWTUserData userData
     ){
         Page<Match> match = matchService.findAllReceivedByUserId(userData.userId(), pageable);
+        return PageResponse.from(match.map(MatchResponse::from));
+    }
+
+    @GetMapping("/api/v1/matches/rejected")
+    @ResponseStatus(HttpStatus.OK)
+    public PageResponse<MatchResponse> rejected(
+            @PageableDefault(sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable,
+            @AuthenticationPrincipal JWTUserData userData
+    ){
+        Page<Match> match = matchService.findAllRejectedByUserId(userData.userId(), pageable);
         return PageResponse.from(match.map(MatchResponse::from));
     }
 
