@@ -1,10 +1,15 @@
 package dev.jorge.projects.gossipuerj.controller;
 
 import dev.jorge.projects.gossipuerj.config.JWTUserData;
+import dev.jorge.projects.gossipuerj.dto.request.match.MatchRequest;
 import dev.jorge.projects.gossipuerj.dto.response.common.PageResponse;
+import dev.jorge.projects.gossipuerj.dto.response.crush.CrushResponse;
 import dev.jorge.projects.gossipuerj.dto.response.match.MatchResponse;
+import dev.jorge.projects.gossipuerj.enums.match.Status;
+import dev.jorge.projects.gossipuerj.model.Crush;
 import dev.jorge.projects.gossipuerj.model.Match;
 import dev.jorge.projects.gossipuerj.service.MatchService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -43,13 +48,25 @@ public class MatchController {
         return PageResponse.from(match.map(MatchResponse::from));
     }
 
+    @GetMapping("/api/v1/crushes/{crushId}/matches")
+    @ResponseStatus(HttpStatus.OK)
+    public MatchResponse matches(
+            @PathVariable String crushId,
+            @RequestParam Status status,
+            @AuthenticationPrincipal JWTUserData userData
+    ){
+        Match match = matchService.findByCrushIdAndUserIdAndStatus(crushId, userData.userId(), status);
+        return MatchResponse.from(match);
+    }
+
     @PostMapping("/api/v1/crushes/{crushId}/matches")
     @ResponseStatus(HttpStatus.CREATED)
     public ResponseEntity<MatchResponse> create(
             @PathVariable String crushId,
-            @AuthenticationPrincipal JWTUserData userData
+            @AuthenticationPrincipal JWTUserData userData,
+            @RequestBody @Valid MatchRequest request
     ){
-        Match created = matchService.create(crushId, userData.userId());
+        Match created = matchService.create(crushId, userData.userId(), request.status());
         return ResponseEntity
                 .created(URI.create("/api/v1/crushs/%s/matches".formatted(created.getId())))
                 .body(MatchResponse.from(created));

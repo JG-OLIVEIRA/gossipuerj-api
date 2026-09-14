@@ -17,7 +17,6 @@ public class CrushService {
     private final CrushRepository crushRepository;
 
     private final AuthService authService;
-    private final CourseService courseService;
 
     @Transactional
     public Crush create(CrushRequest request, String userId) {

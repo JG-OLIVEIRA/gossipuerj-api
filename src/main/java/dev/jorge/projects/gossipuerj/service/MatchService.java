@@ -22,14 +22,17 @@ public class MatchService {
 
     private final CrushService crushService;
 
-    public Match create(String crushId, String userId){
+    public Match create(String crushId, String userId, Status status){
         Crush liker = findCrushByUserId(userId);
         String likerId = liker.getId();
 
-        Optional<Match> existingMatch = matchRepository.findMatchBetweenCrushes(crushId, likerId);
+        Optional<Match> existingMatch = matchRepository.findMatchBetweenCrushes(crushId, likerId, Status.PENDING);
 
         if(existingMatch.isPresent()){
-            return accept(crushId, userId, existingMatch.get().getId());
+            if(status.equals(Status.ACCEPTED)){
+                return accept(crushId, userId, existingMatch.get().getId());
+            }
+           return reject(crushId, userId, existingMatch.get().getId());
         }
 
         if(crushId.equals(likerId)){
@@ -39,7 +42,7 @@ public class MatchService {
         Match match = new Match();
         match.setLiker(liker);
         match.setLiked(crushService.findById(crushId));
-        match.setStatus(Status.PENDING);
+        match.setStatus(status);
         return matchRepository.save(match);
     }
 
@@ -82,6 +85,12 @@ public class MatchService {
         }
 
         return match;
+    }
+
+    public Match findByCrushIdAndUserIdAndStatus(String crushId, String userId, Status status) {
+        Crush crush = findCrushByUserId(userId);
+        return matchRepository.findMatchBetweenCrushes(crushId, crush.getId(), status)
+                .orElseThrow(() -> new MatchNotFoundException("No match found between crushId: " + crushId + " and userId: " + userId));
     }
 
     private Crush findCrushByUserId(String userId) {
