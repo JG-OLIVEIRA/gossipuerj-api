@@ -10,6 +10,7 @@ public record PostResponse(
         String title,
         String courseName,
         String content,
+        String photoUrl,
         Category category,
         LocalDateTime createdAt,
         LocalDateTime updatedAt
@@ -20,6 +21,7 @@ public record PostResponse(
                 post.getTitle(),
                 post.getCourse().getName(),
                 post.getContent(),
+                post.getPhotoUrl(),
                 post.getCategory(),
                 post.getCreatedAt(),
                 post.getUpdatedAt()

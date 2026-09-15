@@ -26,6 +26,7 @@ public class PostService {
         newPost.setTitle(request.title());
         newPost.setCourse(user.getCourse());
         newPost.setContent(request.content());
+        newPost.setPhotoUrl(request.photoUrl());
         newPost.setCategory(request.category());
         newPost.setAuthor(user);
         return postRepository.save(newPost);

@@ -1,0 +1,1 @@
+ALTER TABLE tb_posts ADD COLUMN photo_url TEXT;

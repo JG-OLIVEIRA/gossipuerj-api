@@ -8,5 +8,6 @@ import jakarta.validation.constraints.NotNull;
 public record PostRequest(
         @NotBlank String title,
         @NotBlank String content,
+        String photoUrl,
         @NotNull Category category
 ){}

@@ -26,6 +26,9 @@ public class Post implements Serializable {
     @Column(nullable = false)
     private String content;
 
+    @Column(nullable = false)
+    private String photoUrl;
+
     @OneToOne
     @JoinColumn(name = "course_id", nullable = false)
     private Course course;
