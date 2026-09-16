@@ -171,8 +171,8 @@ public class AuthService {
 
     public void resendVerificationCode(String email) {
         User user = findByEmail(email);
-        if (!user.isEnabled()) {
-            throw new UserNotVerifiedException(email);
+        if (user.isEnabled()) {
+            throw new UserAlreadyVerifiedException(email);
         }
         user.setVerificationCode(generateVerificationCode());
         user.setVerificationCodeExpiresAt(LocalDateTime.now().plusMinutes(15));

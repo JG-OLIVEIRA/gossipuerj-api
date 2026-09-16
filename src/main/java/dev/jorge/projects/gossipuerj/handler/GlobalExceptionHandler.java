@@ -29,7 +29,8 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler({
             UserAlreadyExistsException.class,
-            MatchAlreadyRespondedException.class
+            MatchAlreadyRespondedException.class,
+            UserAlreadyVerifiedException.class
     })
     public final ResponseEntity<ExceptionResponse> handlerConflictException(UserAlreadyExistsException ex, WebRequest webRequest) {
         ExceptionResponse exceptionResponse = new ExceptionResponse(
